@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 const App = () => {
   const API_KEY = import.meta.env.VITE_API_KEY;
   const [input, setInput] = useState("");
+  const model = ["gemini-2.0-flash-lite-preview-02-05", "gemini-2.0-flash"];
+  const [modelId, setModelId] = useState(0);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -52,7 +54,7 @@ const App = () => {
     try {
       return await axios({
         method: "post",
-        url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite-preview-02-05:generateContent",
+        url: `https://generativelanguage.googleapis.com/v1beta/models/${model[modelId]}:generateContent`,
         params: { key: API_KEY },
         headers: { "Content-Type": "application/json" },
         data: {
@@ -63,9 +65,13 @@ const App = () => {
       return error;
     }
   }
+  const toggleModelId = () => {
+    setModelId((prevModelId) => (prevModelId === 0 ? 1 : 0));
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-4 h-screen flex flex-col">
+      <button onClick={toggleModelId}>Using {model[modelId]}</button>
       <div className="flex-1 overflow-y-auto mb-4 space-y-4">
         {messages.map((message, index) => (
           <div
